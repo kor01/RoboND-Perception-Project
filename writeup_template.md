@@ -3,9 +3,13 @@
 [//]: # (Image References)
 
 [confuse]: ./misc_images/confuse.png
+
 [world1]: ./misc_images/world1.png
+
 [world2]: ./misc_images/world2.png
+
 [world3]: ./misc_images/world3.png
+
 ---
 
 #### Run The Project:
@@ -30,6 +34,7 @@
 7. Create ROS messages containing the details of each object (name, pick_pose, etc.) and write these messages out to `.yaml` files, one for each of the 3 scenarios (`test1-3.world` in `/pr2_robot/worlds/`).  See the example `output.yaml` for details on what the output should look like.  
 8. Submit a link to your GitHub repo for the project or the Python code for your perception pipeline and your output `.yaml` files (3 `.yaml` files, one for each test world).  You must have correctly identified 100% of objects from `pick_list_1.yaml` for `test1.world`, 80% of items from `pick_list_2.yaml` for `test2.world` and 75% of items from `pick_list_3.yaml` in `test3.world`.
 9. Congratulations!  Your Done!
+
 
 #### Extra Challenges: Complete the Pick & Place
 7. not yet implemented

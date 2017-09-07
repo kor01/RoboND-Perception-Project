@@ -32,6 +32,7 @@ MAX_DISTANCE = 0.005
 
 def segment_table_objects(data):
   seg = data.make_segmenter()
+  seg.set_method_type(pcl.SAC_RANSAC)
   seg.set_model_type(pcl.SACMODEL_PLANE)
   seg.set_distance_threshold(MAX_DISTANCE)
   inliers, _ = seg.segment()
@@ -45,7 +46,7 @@ def cluster_objects(objects):
   tree = objects.make_kdtree()
   ec = objects.make_EuclideanClusterExtraction()
   ec.set_ClusterTolerance(0.01)
-  ec.set_MinClusterSize(250)
+  ec.set_MinClusterSize(125)
   ec.set_MaxClusterSize(10000)
   ec.set_SearchMethod(tree)
   ret = ec.Extract()

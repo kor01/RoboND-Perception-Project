@@ -1,5 +1,11 @@
 ## Project: Perception Pick & Place
 
+[//]: # (Image References)
+
+[confuse]: ./misc_images/confuse.png
+[world1]: ./misc_images/world1.png
+[world2]: ./misc_images/world2.png
+[world3]: ./misc_images/world3.png
 ---
 
 #### Run The Project:
@@ -63,12 +69,30 @@
 
 #### Perception Algorithm:
 
-1. use 3 different models for 3 worlds to maximize the recognition precision
+1. use `cv2.cvtColor(img, cv2.COLOR_RGB2HSV_FULL)` to replace matplotlib hsv implementation to get much faster feature extraction speed
 
-2. use different histogram bin-size for 3 worlds to maximize the performance of svm model
+4. I modified `capture_feature.py` script to ***dump the raw cloud and norm*** data to be able to experiment feature extraction algorithm faster (without going through feature capture every time), the new script is included in `pr2_robot/script/capture_feature.py`
 
-3. use `cv2.cvtColor(img, cv2.COLOR_RGB2HSV_FULL)` to replace matplotlib hsv implementation to get much faster feature extraction speed
+5. The ***consistency between training and application*** is improved by explicitly adding the voxel down-sampling step to `capture_feature.py`. this consistency ensured the cross-validation accuracy correctly reflect the accuracy in application setting. (the outlier remover however is not added since it is not locally applied and may corrupt the single item point cloud)
 
-4. I modified `capture_feature.py` script to dump the raw cloud and norm data to be able to experiment feature extraction algorithm faster (without going through feature capture every time), the new script is included in `pr2_robot/script/capture_feature.py`
+6. the dataset used in training is much larger than the default setting --- 150 examples per-item in 8 classes; ***the large dataset prevents overfitting and improves the robustness of the classifier***
 
-5. the future improvement will be the implementation of the extra challenges
+7. the feature extraction is improved by setting the norm bin size to 2 (to achieve **better orientation invariance** for linear model) and color histogram bin size to 64. The training and feature extraction code is in `pr2_robot/notebook/cloud_recognition.ipynb`
+
+8. the final svm classifier on full object collection (8 classes) achieves accuracy score: 0.97
+
+    ![confusion matrix of the svm classifier][confuse]
+
+9. the system robustly recognize all the objects in 3-worlds
+
+    a. world 1 perception
+
+    ![world1][world1]
+
+    b. world 2 perception
+
+    ![world2][world2]
+
+    c. world 3 perception
+
+    ![world3][world3]

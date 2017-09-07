@@ -43,7 +43,7 @@ def send_to_yaml(yaml_filename, dict_list):
 
 def pcl_callback(obj_pub, table_pub,
                  marker_pub, detect_pub,
-                 debug_pub, msg, model, mover):
+                 debug_pub, msg, model, mover, add_idx=False):
 
   data = ph.ros_to_pcl(msg)
   data = pp.downsample_pcl(data)
@@ -53,7 +53,7 @@ def pcl_callback(obj_pub, table_pub,
   table, objects = pp.segment_table_objects(workspace)
   table_pub.publish(ph.pcl_to_ros(table))
   clusters = pp.cluster_objects(objects)
-  visual_objects = pp.visualize_objects(objects, clusters, color=False)
+  visual_objects = pp.visualize_objects(objects, clusters, color=True)
   obj_pub.publish(ph.pcl_to_ros(visual_objects))
 
   labels, centroids, dos, object_list, features = [], [], [], [], []
@@ -70,8 +70,11 @@ def pcl_callback(obj_pub, table_pub,
     dos.append(obj)
     label_pos = list(cloud[0])[:3]
     label_pos[2] += .4
+
+    if add_idx:
+      label + ':' % index
     marker_pub.publish(
-      make_label(label + ':%d' % index, label_pos, index))
+      make_label(label, label_pos, index))
 
   '''
   for i, d in enumerate(objects):
@@ -108,7 +111,7 @@ def pr2_mover(centers, labels, dropbox, target_list, scene_id):
     pos.x, pos.y, pos.z = place_pos
     dict_list.append(make_yaml_dict(req))
     
-    '''
+    
     try:
       rospy.wait_for_service('pick_place_routine')
       pick_place_routine = rospy.ServiceProxy('pick_place_routine', PickPlace)
@@ -116,7 +119,7 @@ def pr2_mover(centers, labels, dropbox, target_list, scene_id):
       print "Response: ", resp.success
     except rospy.ServiceException, e:
       print "Service call failed: %s" % e
-    '''
+    
 
   send_to_yaml('output_%d.yaml' % scene_id, dict_list)
   print 'output_%d.yaml ok' % scene_id
@@ -139,7 +142,7 @@ def main():
       x, y, dropbox, targets, scene_id)
 
   classifier_dir = os.path.join(dirname, 'classifiers')
-  model_path = 'svm_model_%d.sav' % scene_id
+  model_path = 'svm_model_3.sav'
   model_path = os.path.join(classifier_dir, model_path)
   
   model = pp.RecognitionModel(model_path)
